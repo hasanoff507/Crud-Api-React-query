@@ -1,47 +1,41 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import * as api from '../../Api/Api'
 
 const EmpListing = () => {
+
     const [empdata, setEmpdata] = useState(null)
 
     const navigate = useNavigate()
     const LoadDetail = (id) => {
-        // eslint-disable-next-line no-undef
-        navigate("/employee/detail/"+id)
+        navigate("/employee/detail/" + id)
     }
 
     const LoadEdit = (id) => {
-        navigate("/employee/edit/"+id)
+        navigate("/employee/edit/" + id)
 
     }
 
-    const RemoveFunction = (id) => {
-if(window.confirm('Do you want to remove ?' )){
-    fetch("http://localhost:8000/employee/"+id, {
-        method: 'DELETE',
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(empdata)
-    })
-        .then((res) => {
-            alert('Removed successfully.')
+    const RemoveFunction = async (id) => {
+        if (window.confirm("Do you want to remove")) {
+            const deleteid = await api.deleteData(id);
+            console.log(deleteid);
+        }
+        if (window.confirm("Removed successfully")) {
             window.location.reload()
-        }).catch((err) => {
-            console.log(err.message);
-        })
-}
+
+        }
     }
 
     useEffect(() => {
-        fetch("http://localhost:8000/employee")
-            .then((res) => {
-                return res.json()
-            })
-            .then((resp) => {
-                setEmpdata(resp);
-            }).catch((err) => {
-                console.log(err.message);
-            })
+        const getAllData = async () => {
+            const states = await api.getAllData();
+            console.log(states);
+            setEmpdata(states);
+        }
+        getAllData();
     }, [])
+
     return (
         <div className="constainer">
             <div className="card">
@@ -72,11 +66,19 @@ if(window.confirm('Do you want to remove ?' )){
                                         <td>{item.email}</td>
                                         <td>{item.phone}</td>
                                         <td>
-                                            <img style={{width:'275px', height:'180px'}} src={item.imageData} alt=""/>
+                                            <img style={{ width: '275px', height: '180px' }} src={item.imageData} alt="" />
                                         </td>
                                         <td>
                                             <a onClick={() => { LoadEdit(item.id) }} className="btn btn-success">Edit</a>
-                                            <a onClick={() => { RemoveFunction(item.id) }} className="btn btn-danger">Remove</a>
+                                            {/* <a onClick={() => { RemoveFunction(item.id) }} className="btn btn-danger">Remove</a> */}
+                                            <button
+                                                onClick={() => {
+                                                    RemoveFunction(item.id);
+                                                }}
+                                                className="btn btn-danger"
+                                            >
+                                                Remove
+                                            </button>
                                             <a onClick={() => { LoadDetail(item.id) }} className="btn btn-primary">Detailst</a>
                                         </td>
                                     </tr>

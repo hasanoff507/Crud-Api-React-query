@@ -1,6 +1,7 @@
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
+import * as api from '../../Api/Api'
 const EmpCreate = () => {
     const [id, setId] = useState("")
     const [name, setName] = useState("")
@@ -9,23 +10,39 @@ const EmpCreate = () => {
     const [imageData, setImageData] = useState(null);
     const [active, setActive] = useState(true)
     const [validation, setValidation] = useState(false)
-
-
+    const [response, setResponse] = useState()
     const navigate = useNavigate()
-    const handleSubmit = (e) => {
+
+
+    //with api Post in Url
+    // const handleSubmit =   (e) => {
+    //     e.preventDefault();
+
+    //     const empdata = { id, name, email, phone, active,imageData };
+    //     // fetch("http://localhost:8000/employee", {
+    //     //     method: 'POST',
+    //     //     headers: { "content-type": "application/json" },
+    //     //     body: JSON.stringify(empdata)
+    //     // })
+    //      axios.getAllPost((empdata))
+    //         .then((res) => {
+    //             setResponse(res.data)
+    //             alert('Saved successfully.')
+    //             navigate('/')
+    //         }).catch((err) => {
+    //             console.log(err.message);
+    //         })
+    //     }
+
+    //with api Post in React-Query
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const empdata = { id, name, email, phone, active,imageData };
-        fetch("http://localhost:8000/employee", {
-            method: 'POST',
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify(empdata)
-        })
-            .then((res) => {
-                alert('Saved successfully.')
-                navigate('/')
-            }).catch((err) => {
-                console.log(err.empdata.message);
-            })
+        const empdata = { id, name, email, phone, active, imageData };
+
+        const post = api.postData(empdata);
+        navigate('/')
+        console.log(post);
     }
 
 
@@ -34,9 +51,9 @@ const EmpCreate = () => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onloadend = () => {
-          setImageData(reader.result);
+            setImageData(reader.result);
         };
-      };
+    };
 
     return (
         <div>
@@ -76,9 +93,9 @@ const EmpCreate = () => {
                                     </div>
                                     <div className="col-lg-12">
                                         <div className="form-group">
-                                        <label>Image</label>
-                                            <input type="file" onChange={(event) => handleImageUpload(event)}  className="form-control" />
-                                            {imageData && <img style={{width:'275px', height:'180px'}} src={imageData} alt="" />}
+                                            <label>Image</label>
+                                            <input type="file" onChange={(event) => handleImageUpload(event)} className="form-control" />
+                                            {imageData && <img style={{ width: '275px', height: '180px' }} src={imageData} alt="" />}
                                         </div>
                                     </div>
                                     <div className="col-lg-12">
